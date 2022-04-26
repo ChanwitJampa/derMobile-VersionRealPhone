@@ -181,8 +181,8 @@ class _PlotsScreen extends State<PlotsScreen> {
                 children: <Widget>[
                   Container(
                     margin: const EdgeInsets.all(10.0),
-                    width: 50,
-                    height: 50,
+                    width: 30,
+                    height: 30,
                     decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         image: DecorationImage(
@@ -457,10 +457,10 @@ class _PlotsScreen extends State<PlotsScreen> {
             Icon(
               Icons.camera,
               color: Colors.blue,
-              size: 30,
+              size: 20,
             ),
             SizedBox(
-              width: 20,
+              width: 10,
             ),
             Container(
               child: InkWell(
@@ -468,7 +468,7 @@ class _PlotsScreen extends State<PlotsScreen> {
                   child: Text(
                     //iconcamera
                     "Camera",
-                    style: TextStyle(color: Colors.blue, fontSize: 18),
+                    style: TextStyle(color: Colors.blue, fontSize: 12),
                   ),
                 ),
                 onTap: () {
@@ -583,7 +583,7 @@ class _PlotsScreen extends State<PlotsScreen> {
             Icon(
               Icons.photo,
               color: Colors.blue,
-              size: 30,
+              size: 20,
             ),
             SizedBox(
               width: 5,
@@ -593,7 +593,7 @@ class _PlotsScreen extends State<PlotsScreen> {
                 child: Container(
                   child: Text(
                     "Gallery",
-                    style: TextStyle(color: Colors.blue, fontSize: 18),
+                    style: TextStyle(color: Colors.blue, fontSize: 12),
                   ),
                 ),
                 onTap: () {
@@ -618,7 +618,7 @@ class _PlotsScreen extends State<PlotsScreen> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Icon(Icons.upload, color: Colors.blue, size: 30),
+            Icon(Icons.upload, color: Colors.blue, size: 20),
             SizedBox(
               width: 5,
             ),
@@ -628,7 +628,7 @@ class _PlotsScreen extends State<PlotsScreen> {
                   child: Text(
                     //iconupload
                     "Upload",
-                    style: TextStyle(color: Colors.blue, fontSize: 18),
+                    style: TextStyle(color: Colors.blue, fontSize: 12),
                   ),
                 ),
                 onTap: () {

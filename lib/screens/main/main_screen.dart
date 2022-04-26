@@ -32,6 +32,7 @@ class MainScreen extends StatefulWidget {
   //final List<CameraDescription> cameras;
 
   //({required this.cameras});
+  
 
   @override
   _MainScreenState createState() => _MainScreenState();
@@ -243,7 +244,7 @@ class _MainScreenState extends State<MainScreen> {
       double? finished = 0,
       double? third = 0}) {
     return Container(
-      height: 140,
+      height: 100,
       //width: 164,
       padding: EdgeInsets.all(12),
       margin: EdgeInsets.all(8),
@@ -259,16 +260,16 @@ class _MainScreenState extends State<MainScreen> {
       child: Row(
         children: [
           Container(
-            height: 90,
-            width: 90,
+            height: 50,
+            width: 50,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: Color(0xFFEEEEEE).withOpacity(0.5),
             ),
             child: Center(
               child: SizedBox(
-                height: 40,
-                width: 40,
+                height: 20,
+                width: 20,
                 child: (imageName != null
                     ? Image.asset(
                         imageName,
@@ -290,7 +291,7 @@ class _MainScreenState extends State<MainScreen> {
                 menuName,
                 style: TextStyle(
                   color: Colors.grey[800],
-                  fontSize: 20,
+                  fontSize: 15,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -298,7 +299,7 @@ class _MainScreenState extends State<MainScreen> {
                 subMenuName,
                 style: TextStyle(
                   color: Colors.grey[600],
-                  fontSize: 16,
+                  fontSize: 10,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -327,7 +328,7 @@ class _MainScreenState extends State<MainScreen> {
                     // color: Colors.blue[600],
                     color: Colors.blue[600],
                     fontWeight: FontWeight.normal,
-                    fontSize: 40,
+                    fontSize: 20,
                   ),
                 ),
               ),
@@ -339,7 +340,7 @@ class _MainScreenState extends State<MainScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         Container(
-                            width: 280,
+                            width: 187,
                             child: InkWell(
                               onTap: () {
                                 Navigator.of(context)
@@ -351,7 +352,7 @@ class _MainScreenState extends State<MainScreen> {
                                   imageName: "assets/images/unknown_user.png"),
                             )),
                         Container(
-                            width: 280,
+                            width: 187,
                             child: InkWell(
                               onTap: () {
                                 Navigator.of(context)
@@ -375,7 +376,7 @@ class _MainScreenState extends State<MainScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       Container(
-                        width: 280,
+                        width: 187,
                         child: InkWell(
                           child: makeMenu(
                               menuName: "Trials",
@@ -389,7 +390,7 @@ class _MainScreenState extends State<MainScreen> {
                         ),
                       ),
                       Container(
-                        width: 280,
+                        width: 187,
                         child: InkWell(
                           child: makeMenu(
                               menuName: "Plot",
@@ -413,7 +414,7 @@ class _MainScreenState extends State<MainScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       Container(
-                        width: 280,
+                        width: 187,
                         child: InkWell(
                           child: makeMenu(
                               menuName: "Uploaded",
@@ -425,7 +426,7 @@ class _MainScreenState extends State<MainScreen> {
                         ),
                       ),
                       Container(
-                        width: 280,
+                        width: 187,
                         child: InkWell(
                           child: makeMenu(
                               menuName: "Info",
