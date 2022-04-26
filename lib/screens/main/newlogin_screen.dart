@@ -196,8 +196,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 color: Colors.white,
                 bgColor: HexColor('#4D4D4D'),
                 mini: false,
-                fontScale: 0.025,
-                height: 60,
+                fontScale: 0.020, //0.025
+                height: 40, //60
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
@@ -209,8 +209,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 color: Colors.white,
                 bgColor: HexColor('#4D4D4D'),
                 mini: false,
-                fontScale: 0.025,
-                height: 60,
+                fontScale: 0.020, //0.025
+                height: 40, //60
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
@@ -219,11 +219,11 @@ class _LoginScreenState extends State<LoginScreen> {
                     .pushReplacementNamed(GOOGLE_LOGIN_ROUTE)),
             Utils.getButton(
                 text: 'Sign In with Microsoft',
-                fontScale: 0.025,
+                fontScale: 0.020, //0.025
                 color: Colors.white,
                 bgColor: HexColor('#4D4D4D'),
                 mini: false,
-                height: 60,
+                height: 40, //60
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
@@ -259,8 +259,8 @@ class _LoginScreenState extends State<LoginScreen> {
         Navigator.of(context).pushNamed(DIGIT_ROUTE);
       },
       child: Container(
-        height: 60.0,
-        width: 60.0,
+        height: 30.0, //60
+        width: 30.0, //60
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           color: Colors.white,
@@ -313,7 +313,7 @@ class _LoginScreenState extends State<LoginScreen> {
             children: const [
               Icon(
                 Icons.account_circle,
-                size: 30,
+                size: 25, //3
                 color: Color(0xFF398AE5),
               ),
               SizedBox(
@@ -323,7 +323,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: Text(
                   'User in this Device',
                   style: TextStyle(
-                    fontSize: 18,
+                    fontSize: 16, //18
                     fontWeight: FontWeight.w500,
                     color: Color(0xFF398AE5),
                   ),
@@ -338,7 +338,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: Text(
                       item,
                       style: const TextStyle(
-                        fontSize: 18,
+                        fontSize: 16, //18
                         fontWeight: FontWeight.normal,
                         color: Color(0xFF398AE5),
                       ),
@@ -365,8 +365,8 @@ class _LoginScreenState extends State<LoginScreen> {
           iconSize: 14,
           iconEnabledColor: Color(0xFF398AE5),
           iconDisabledColor: Colors.grey,
-          buttonHeight: 70,
-          buttonWidth: 520,
+          buttonHeight: 50, //70
+          buttonWidth: 400, //520
           buttonPadding: const EdgeInsets.only(left: 14, right: 14),
           buttonDecoration: BoxDecoration(
             borderRadius: BorderRadius.circular(14),
@@ -376,7 +376,7 @@ class _LoginScreenState extends State<LoginScreen> {
             color: Colors.white,
           ),
           buttonElevation: 2,
-          itemHeight: 50,
+          itemHeight: 40, //50
           itemPadding: const EdgeInsets.only(left: 14, right: 14),
           dropdownMaxHeight: 205,
           dropdownWidth: 520,
@@ -483,7 +483,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   physics: AlwaysScrollableScrollPhysics(),
                   padding: EdgeInsets.symmetric(
                     horizontal: 40.0,
-                    vertical: 120.0,
+                    vertical: 110.0, //120
                   ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -495,21 +495,21 @@ class _LoginScreenState extends State<LoginScreen> {
                           image: AssetImage(
                             'assets/images/syngenta_vector_logo.png',
                           ),
-                          width: 200,
-                          height: 200,
+                          width: 130, //200
+                          height: 130, //200
                         ),
                       ),
-                      SizedBox(height: 290.0),
+                      SizedBox(height: 250.0), //290
                       _buildDropdownUser(),
-                      SizedBox(height: 30.0),
+                      SizedBox(height: 15.0), // 30
                       Text(
                         '- OR -',
                         style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.w400,
-                            fontSize: 20),
+                            fontSize: 15), //20
                       ),
-                      SizedBox(height: 20.0),
+                      SizedBox(height: 15.0), //20
                       // // _buildEmailTF(),
                       // _buildPasswordTF(),
                       // _buildForgotPasswordBtn(),

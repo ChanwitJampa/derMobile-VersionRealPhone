@@ -20,10 +20,10 @@ class _SettingScreen extends State<SettingScreen> {
         backgroundColor: Colors.white,
         body: Body(),
         appBar: PreferredSize(
-          preferredSize: Size.fromHeight(70.0),
+          preferredSize: Size.fromHeight(50.0),
           child: AppBar(
             backgroundColor: Colors.blueAccent,
-            title: Text("Setting Profile", style: TextStyle(fontSize: 32)),
+            title: Text("Setting Profile", style: TextStyle(fontSize: 22)),
             automaticallyImplyLeading: false,
             centerTitle: true,
             leading: IconButton(
@@ -32,7 +32,7 @@ class _SettingScreen extends State<SettingScreen> {
               },
               icon: Icon(
                 Icons.arrow_back,
-                size: 30,
+                size: 20,
               ),
             ),
           ),
@@ -49,30 +49,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String name = "";
   String email = "";
   void initState() {
+    _UserBox = Hive.box("Users");
+    String firstName = _UserBox!.get(userNameNow).firstName;
+    String lastName = _UserBox!.get(userNameNow).lastName;
+    // String emailUser = _UserBox!.get(userNameNow).email == null
+    //     ? ""
+    //     : _UserBox!.get(userNameNow).email;
 
-      _UserBox = Hive.box("Users");
-      String firstName = _UserBox!.get(userNameNow).firstName;
-      String lastName = _UserBox!.get(userNameNow).lastName;
-      // String emailUser = _UserBox!.get(userNameNow).email == null
-      //     ? ""
-      //     : _UserBox!.get(userNameNow).email;
+    print("name : " + firstName + " " + lastName);
 
-      print("name : " + firstName + " " + lastName);
-
-      if (firstName != null &&
-          firstName != "" &&
-          lastName != null &&
-          lastName != "") {
-        name = firstName.toString() + " " + lastName.toString();
-        email = "emailUser";
-      }
-    
+    if (firstName != null &&
+        firstName != "" &&
+        lastName != null &&
+        lastName != "") {
+      name = firstName.toString() + " " + lastName.toString();
+      email = "emailUser";
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    
-
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
@@ -80,8 +76,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             Container(
-              height: 160,
-              width: 160,
+              height: 120,
+              width: 120,
               margin: EdgeInsets.only(top: 25),
               child: Stack(
                 children: <Widget>[
@@ -92,17 +88,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ],
               ),
             ),
-            SizedBox(height: 25),
+            SizedBox(height: 16),
             Text(
               name,
-              style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 10),
+            SizedBox(height: 8),
             Text(
               email,
-              style: TextStyle(fontSize: 25),
+              style: TextStyle(fontSize: 15),
             ),
-            SizedBox(height: 20),
+            SizedBox(height: 15),
           ],
         ),
       ],
@@ -148,7 +144,8 @@ class Body extends StatelessWidget {
             text: "Log Out",
             icon: FontAwesomeIcons.signOutAlt,
             press: () {
-              Navigator.pushNamedAndRemoveUntil(context, NEW_LOGIN_ROUTE, (r) => false);
+              Navigator.pushNamedAndRemoveUntil(
+                  context, NEW_LOGIN_ROUTE, (r) => false);
             },
           ),
         ],
@@ -172,7 +169,7 @@ class ProfileMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
       child: TextButton(
         style: TextButton.styleFrom(
           //primary: Color(0xFFFF7643),
@@ -187,11 +184,14 @@ class ProfileMenu extends StatelessWidget {
           children: [
             Icon(
               this.icon,
-              size: 30,
+              size: 20,
             ),
             SizedBox(width: 20),
-            Expanded(child: Text(text, style: TextStyle(fontSize: 25))),
-            Icon(Icons.arrow_forward_ios),
+            Expanded(child: Text(text, style: TextStyle(fontSize: 20))),
+            Icon(
+              Icons.arrow_forward_ios,
+              size: 20,
+            ),
           ],
         ),
       ),
