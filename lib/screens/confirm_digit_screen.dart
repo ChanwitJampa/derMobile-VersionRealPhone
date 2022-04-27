@@ -189,8 +189,8 @@ class _PinScreenState extends State<PinScreen> {
                     ),
                   ),*/
                   Container(
-                    width: 90.0,
-                    height: 90.0,
+                    width: 60.0,
+                    height: 60.0,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: Colors.white10.withOpacity(0),
@@ -201,7 +201,7 @@ class _PinScreenState extends State<PinScreen> {
                       onPressed: null,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(60.0)),
-                      height: 90.0,
+                      height: 60.0,
                     ),
                   ),
                   KeyboardNumber(
@@ -225,8 +225,8 @@ class _PinScreenState extends State<PinScreen> {
                     ),
                   ),*/
                   Container(
-                    width: 90.0,
-                    height: 90.0,
+                    width: 60.0,
+                    height: 60.0,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: Colors.white10.withOpacity(0.05),
@@ -239,10 +239,12 @@ class _PinScreenState extends State<PinScreen> {
                       },
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(60.0)),
-                      height: 90.0,
+                      height: 60.0,
                       child: Image.asset(
                         "assets/images/delete_clear.png",
                         color: Colors.white,
+                        width: 60.0,
+                        height: 60.0,
                       ),
                     ),
                   ),
@@ -405,7 +407,7 @@ class _PinScreenState extends State<PinScreen> {
       "Confirm Pincode",
       style: TextStyle(
         color: Colors.white70,
-        fontSize: 35.0,
+        fontSize: 28.0,
         fontWeight: FontWeight.bold,
       ),
     );
@@ -457,7 +459,7 @@ class PINNumber extends StatelessWidget {
         ),*/
         style: TextStyle(
           fontWeight: FontWeight.bold,
-          fontSize: 70.0,
+          fontSize: 50.0,
           //fontSize: 21.0,
           color: Colors.white,
         ),
@@ -472,8 +474,8 @@ class KeyboardNumber extends StatelessWidget {
   KeyboardNumber({required this.n, required this.onPressed});
   Widget build(BuildContext context) {
     return Container(
-      width: 90.0,
-      height: 90.0,
+      width: 60.0,
+      height: 60.0,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: Colors.white10.withOpacity(0),
@@ -484,7 +486,7 @@ class KeyboardNumber extends StatelessWidget {
         onPressed: onPressed,
         shape:
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(60.0)),
-        height: 90.0,
+        height: 60.0,
         child: Text(
           "$n",
           textAlign: TextAlign.center,
