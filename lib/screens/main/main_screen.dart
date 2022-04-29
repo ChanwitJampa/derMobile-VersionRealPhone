@@ -385,7 +385,7 @@ class _MainScreenState extends State<MainScreen> {
                               finished: percentTrialUploaded),
                           onTap: () {
                             Navigator.of(context)
-                                .pushNamed(EXPERIMENT_DASHBOARD_ROUTE);
+                                .pushNamed(NEW_GRAPH);
                           },
                         ),
                       ),

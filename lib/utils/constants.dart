@@ -27,6 +27,7 @@ const String CONFIRMDIGIT_ROUTE = '20';
 
 const String MICROSOFT_LOGIN_ROUTE = '21';
 const String GOOGLE_LOGIN_ROUTE = '22';
+const String NEW_GRAPH = '23';
 
 final kHintTextStyle = TextStyle(
   color: Colors.white54,

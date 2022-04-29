@@ -81,6 +81,8 @@ class Routers {
       case '22':
         return MaterialPageRoute(
             builder: (_) => AuthPage(thirdParty: 'google'));
+      case '23':
+        return MaterialPageRoute(builder: (_) => ExperimanetDashBoardScreen());
       default:
         return MaterialPageRoute(
             builder: (_) => Scaffold(
