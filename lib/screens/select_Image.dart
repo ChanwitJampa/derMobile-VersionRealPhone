@@ -19,23 +19,49 @@ import 'package:path/path.dart' as p;
 
 Box? _UserBox;
 String galleryPath = "";
-
+bool isDuplicateUnmatch=false;
 class SelectImage extends StatefulWidget {
   _SelectImage createState() => _SelectImage();
 }
 
 class _SelectImage extends State<SelectImage> {
-  //List<XFile>? _imageFileList;
+
   initState() {
     super.initState();
+     isDuplicateUnmatch=false;
+    print("-------------test--------------");
+    print("datacode : " +dataCode+" isDuplicate ${isDuplicateUnmatch}"+ " type :"+type);
     _UserBox = Hive.box("Users");
+    if(type=="MATCH"){
+      if(pathImage !="" && File(pathImage).existsSync()){
+      _image = File(pathImage);
+      }
+    }
+    else if(type =="UNMATCH"){
+      if(checkUnmatchPlots(dataCode)){
+        print("duplicate unmatch");
+        isDuplicateUnmatch=true;
+      }
+    }
   }
 
   var _image;
 
   final picker = ImagePicker();
   //late final XFile _imageFile ;
-
+  
+bool checkUnmatchPlots(String barcode){
+  List<OnSitePlot> listOsp = _UserBox?.get(userNameNow).unMatchPlots;
+  for(int i=0;i<listOsp.length;i++){
+    if(barcode==listOsp[i].barcode){
+      
+        _image= File(listOsp[i].plotImgPath);
+    
+      return true;
+    }
+  }
+  return false;
+}
   _getImage(ImageSource imageSource) async {
     final _imageFile = await picker.pickImage(
       source: imageSource,
@@ -49,11 +75,6 @@ class _SelectImage extends State<SelectImage> {
       () {
         _image = _imageFile;
         isSelected = true;
-
-        //_imageFileList = pickedFile;
-        //Rebuild UI with the selected image.
-        //print('$_image');
-        //_image = File(pickedFile.path);
       },
     );
   }
@@ -121,16 +142,26 @@ class _SelectImage extends State<SelectImage> {
           .onSiteTrials[itrial]
           .onSitePlots[jplot]
           .plotImgPath = testpath;
-
-      print(
-          "img path Match plots is : ${_UserBox?.get(userNameNow).onSiteTrials[itrial].onSitePlots[jplot].plotImgPath}");
+      
+      print("img path Match plots is : ${_UserBox?.get(userNameNow).onSiteTrials[itrial].onSitePlots[jplot].plotImgPath}");
+     
     } else if (type == "UNMATCH") {
-      OnSitePlot osp = OnSitePlot(0, dataCode, 0, "", 0, "", testpath, "", "",
-          "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "", "", 0);
-      _UserBox?.get(userNameNow).unMatchPlots.add(osp);
-      int length = _UserBox?.get(userNameNow).unMatchPlots.length;
-      print(
-          "img path UNMatch plots is : ${_UserBox?.get(userNameNow).unMatchPlots[length - 1].plotImgPath} /----/ barcode is ${_UserBox?.get(userNameNow).unMatchPlots[length - 1].barcode}");
+      if(!isDuplicateUnmatch){
+        OnSitePlot osp = OnSitePlot(0, dataCode, 0, "", 0, "", testpath, "", "",
+            "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "", "", 0);
+        _UserBox?.get(userNameNow).unMatchPlots.add(osp);
+        int length = _UserBox?.get(userNameNow).unMatchPlots.length;
+        print(
+            "img path UNMatch plots is : ${_UserBox?.get(userNameNow).unMatchPlots[length - 1].plotImgPath} /----/ barcode is ${_UserBox?.get(userNameNow).unMatchPlots[length - 1].barcode}");
+      }
+      else{
+        List<OnSitePlot> listOsp = _UserBox?.get(userNameNow).unMatchPlots;
+        for(int i=0;i<listOsp.length;i++){
+          if(dataCode==listOsp[i].barcode){
+            _UserBox?.get(userNameNow).unMatchPlots[i].plotImgPath=testpath;
+          }
+        }
+      }
     }
     _UserBox?.get(userNameNow).save();
 
@@ -146,146 +177,6 @@ class _SelectImage extends State<SelectImage> {
     );
   }
 
-/*
-
-  Widget test() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        Container(
-          child: Stack(
-            children: [
-              Row(
-                children: [
-                  Container(
-                    child: Chip(
-                      label: Text(
-                        "Experiment ID:",
-                        style: TextStyle(
-                          color: Colors.white,
-                        ),
-                      ),
-                      backgroundColor: Colors.lightBlue,
-                    ),
-                  ),
-                  Container(
-                    child: Chip(
-                      label: Text('XXXXXX', textAlign: TextAlign.center),
-                    ),
-                  ),
-                ],
-                //Text('Customer Contact', textAlign: TextAlign.left),
-              ),
-            ],
-          ),
-        ),
-        Container(
-          child: Stack(
-            children: [
-              Row(
-                children: [
-                  Container(
-                    child: Chip(
-                      label: Text(
-                        "Plot ID:",
-                        style: TextStyle(
-                          color: Colors.white,
-                        ),
-                      ),
-                      backgroundColor: Colors.lightBlue,
-                    ),
-                  ),
-                  Container(
-                    child: Chip(
-                      label: Text('XXXXXX', textAlign: TextAlign.center),
-                    ),
-                  ),
-                ],
-                //Text('Customer Contact', textAlign: TextAlign.left),
-              ),
-            ],
-          ),
-        ),
-        Container(
-          child: Stack(
-            children: [
-              Row(
-                children: [
-                  Container(
-                    child: Chip(
-                      label: Text(
-                        "Ref Number:",
-                        style: TextStyle(
-                          color: Colors.white,
-                        ),
-                      ),
-                      backgroundColor: Colors.lightBlue,
-                    ),
-                  ),
-                  Container(
-                    child: Chip(
-                      label: Text('XXXXXX', textAlign: TextAlign.center),
-                    ),
-                  ),
-                ],
-                //Text('Customer Contact', textAlign: TextAlign.left),
-              )
-            ],
-          ),
-        ),
-        Center(
-          child: _image != null
-              ? Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Container(
-                    //width: 300,
-                    //height: 300,
-                    child: Image.file(
-                      File(_image.path),
-                    ),
-                  ),
-                )
-              : Container(
-                  height: 300,
-                  width: 500,
-                  padding: const EdgeInsets.all(10.0),
-                  child: Image.asset('assets/images/ic_no_image_icon_4.png'),
-                ),
-        ),
-        SizedBox(
-          width: 20,
-          height: 40,
-          //child: okButton,
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            //Container(
-            //   child: isSelected == true ? ,
-            // ),
-            ElevatedButton.icon(
-              onPressed: () => isSelected == true
-                  ? saveExperiment()
-                  : _getImage(ImageSource.gallery),
-              icon: isSelected == true ? Icon(Icons.add) : Icon(Icons.photo),
-              label: isSelected == true ? Text("Ok") : Text("gallery"),
-            ),
-            ElevatedButton.icon(
-              onPressed: () => isSelected == true
-                  ? cancelExperiment()
-                  : cancelExperiment(), //_getImage(ImageSource.camera),
-              icon: isSelected == true
-                  ? Icon(Icons.dangerous)
-                  : Icon(Icons.camera),
-              label: isSelected == true ? Text("Cancel") : Text("camera"),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-*/
   Widget makeSelectedImage() {
     return Stack(
       fit: StackFit.expand,

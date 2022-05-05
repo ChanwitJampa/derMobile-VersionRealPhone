@@ -398,7 +398,7 @@ class _MainScreenState extends State<MainScreen> {
                               inProgress: allPercentI,
                               finished: allPercentU),
                           onTap: () {
-                            Navigator.of(context).pushNamed(PLOT_ROUTE);
+                            Navigator.of(context).pushNamed(EXPERIMENT_DASHBOARD_ROUTE);
                           },
                         ),
                       ),

@@ -14,6 +14,7 @@ import 'package:der/screens/select_Image.dart';
 import 'package:der/utils/constants.dart';
 
 String dataCode = "";
+String pathImage="";
 String type = "";
 Box? _UserBox;
 int itrial = 0;
@@ -186,11 +187,11 @@ class _QRScreen extends State<QRScreen> {
     });
     controller.scannedDataStream.listen((scanData) {
       setState(() {
-        print(scanData);
+        //print(scanData);
         result = scanData;
-        print("resule = " + result.toString());
-        print(
-            'Barcode Type: ${describeEnum(result!.format)}   Data: ${result!.code}');
+        // print("resule = " + result.toString());
+        // print(
+        //     'Barcode Type: ${describeEnum(result!.format)}   Data: ${result!.code}');
         dataCode = result!.code;
 
         if (checkPlost(dataCode)) {
@@ -229,34 +230,19 @@ class _QRScreen extends State<QRScreen> {
 }
 
 bool checkPlost(String barcode) {
-  print("------------------------------------------------");
   List<OnSiteTrial> ost = _UserBox?.get(userNameNow).onSiteTrials;
-  // ost.forEach((e) {
-  //   e.onSitePlots.forEach((l) {
-  //     if (barcode == l.barcode) {
-  //       print(e.trialId);
-  //       print(l.barcode);
-  //       check = 1;
-  //     }
-  //     if(check==0)
-  //     jplot++;
-  //   });
-  //   if(check==0)
-  //   itrial++;
-  // });
+
   for (; itrial < ost.length; itrial++) {
     for (; jplot < ost[itrial].onSitePlots.length; jplot++) {
       if (barcode == ost[itrial].onSitePlots[jplot].barcode) {
-        print(ost[itrial].trialId);
-        print(ost[itrial].onSitePlots[jplot].barcode);
-        print("i = " + itrial.toString() + " j = " + jplot.toString());
-        print("------------------------------------------------------");
+        pathImage = ost[itrial].onSitePlots[jplot].plotImgPath;
+        // print(ost[itrial].trialId);
+        // print(ost[itrial].onSitePlots[jplot].barcode);
+        // print("i = " + itrial.toString() + " j = " + jplot.toString());
         return true;
       }
     }
   }
-
-  print("------------------------------------------------------");
-
   return false;
 }
+

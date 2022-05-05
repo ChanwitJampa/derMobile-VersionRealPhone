@@ -1,57 +1,25 @@
+import 'dart:io';
+
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
-import 'package:der/screens/main/experiment_screen.dart';
+import 'package:der/entities/site/trial.dart';
+import 'package:der/screens/main/signup_screen.dart';
+import 'package:der/utils/color_palette.dart';
 import 'package:flutter/material.dart';
 import 'package:der/utils/constants.dart';
 import 'package:der/utils/scroll_to_index.dart';
-
+import 'package:flutter_circular_chart/flutter_circular_chart.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 import 'package:hive/hive.dart';
 
 import 'dart:math' as math;
 
 Box? _UserBox;
-
-class ProgressLine extends StatelessWidget {
-  const ProgressLine({
-    Key? key,
-    this.color = const Color(0xFF2697FF),
-    required this.percentage,
-  }) : super(key: key);
-
-  final Color? color;
-  final int? percentage;
-
-    
-
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-        padding: EdgeInsetsDirectional.fromSTEB(12, 2, 12, 0),
-        child: Stack(
-          children: [
-            Container(
-              width: double.infinity,
-              height: 10,
-              decoration: BoxDecoration(
-                color: color!.withOpacity(0.1),
-                borderRadius: BorderRadius.all(Radius.circular(10)),
-              ),
-            ),
-            LayoutBuilder(
-              builder: (context, constraints) => Container(
-                width: constraints.maxWidth * (percentage! / 100),
-                height: 10,
-                decoration: BoxDecoration(
-                  color: color,
-                  borderRadius: BorderRadius.all(Radius.circular(10)),
-                ),
-              ),
-            ),
-          ],
-        ));
-  }
-}
+Map<String, double> map1 = {};
+Map<String, double> map2 = {};
+int countAll = 0;
+int countUpload = 0;
+int countImage = 0;
+int corlor = 0;
 
 class ExperimanetDashBoardScreen extends StatefulWidget {
   _ExperimanetDashBoardScreen createState() => _ExperimanetDashBoardScreen();
@@ -63,23 +31,111 @@ class _ExperimanetDashBoardScreen extends State<ExperimanetDashBoardScreen> {
   late List<List<int>> randomList;
 
   static const maxCount = 100;
+
   final random = math.Random();
 
-  int finImage = (allPercentI * 100).round();
-  int finUpload = (allPercentU * 100).round();
+  final GlobalKey<AnimatedCircularChartState> _chartKey =
+      new GlobalKey<AnimatedCircularChartState>();
+
+  final GlobalKey<AnimatedCircularChartState> _chartKey2 =
+      new GlobalKey<AnimatedCircularChartState>();
+
+  final _chartSize = const Size(200.0, 200.0);
+
+  late List<CircularStackEntry> data;
+
+  late List<CircularStackEntry> data2;
+
+  void _randomize() {
+    setState(() {
+      data = _generateRandomData(map1);
+      data2 = _generateRandomData(map2);
+      _chartKey.currentState!.updateData(data);
+      _chartKey2.currentState!.updateData(data2);
+    });
+  }
+
+  getDataToDisplay() {
+    print("getdata to display");
+    countAll = 0;
+    countUpload = 0;
+    countImage = 0;
+    List<OnSiteTrial> listOst = _UserBox?.get(userNameNow).onSiteTrials;
+
+    if (listOst.length > 0) {
+      for (int i = 0; i < listOst.length; i++) {
+        for (int j = 0; j < listOst[i].onSitePlots.length; j++) {
+          countAll++;
+          if (listOst[i].onSitePlots[j].isUpload == 1) {
+            countUpload++;
+          }
+          if (File(listOst[i].onSitePlots[j].plotImgPath).existsSync()) {
+            countImage++;
+          }
+        }
+      }
+    } else {
+      countAll = -1;
+      countUpload = 0;
+      countImage = 0;
+    }
+    map1 = {
+      'Upload': (countUpload * 100) / countAll,
+      'No-Upload': 100 - ((countUpload * 100) / countAll),
+      
+    };
+    map2 = {
+      'Image': (countImage * 100) / countAll,
+      'No-Image': 100 - ((countImage * 100) / countAll),
+      
+    };
+  }
+
+  List<CircularStackEntry> _generateRandomData(Map<String, double> map1) {
+    int stackCount = 1; //.nextInt(3);
+
+    List<CircularStackEntry> data = List.generate(stackCount, (i) {
+      int segCount = random.nextInt(10);
+      segCount = segCount == 0 ? 1 : segCount;
+      List<CircularSegmentEntry> segments = List.generate(map1.length, (index) {
+        String key = map1.keys.elementAt(index);
+        Color randomColor;
+        if(countAll == -1){
+           randomColor = ColorPalette.primary[4];
+        }
+        else {
+           randomColor = ColorPalette.primary[corlor];
+        }
+        corlor++;
+        return new CircularSegmentEntry(map1[key], randomColor, desc: key);
+      });
+      //   List<CircularSegmentEntry> segments =  List.generate(segCount, (j) {
+
+      //   Color randomColor = ColorPalette.primary.random(random);
+      //   return new CircularSegmentEntry(random.nextDouble(), randomColor,desc:"test");
+      // });
+
+      return new CircularStackEntry(segments);
+    });
+
+    return data;
+  }
 
   @override
   void initState() {
     super.initState();
     _UserBox = Hive.box('Users');
-
-    print('test');
+    getDataToDisplay();
+    corlor = 0;
     controller = AutoScrollController(
         viewportBoundaryGetter: () =>
             Rect.fromLTRB(0, 0, 0, MediaQuery.of(context).padding.bottom),
         axis: Axis.horizontal);
     randomList = List.generate(maxCount,
         (index) => <int>[index, (1000 * random.nextDouble()).toInt()]);
+
+    data = _generateRandomData(map1);
+    data2 = _generateRandomData(map2);
   }
 
   Widget _wrapScrollTag({required int index, required Widget child}) =>
@@ -222,7 +278,7 @@ class _ExperimanetDashBoardScreen extends State<ExperimanetDashBoardScreen> {
                 makeDoughnutProgress(inProgress: 0.6, finished: 0.6),
                 feedImage != ''
                     ? Container(
-                        height: 160,
+                        height: 90,
                         child: Stack(
                           children: [Container()],
                         ),
@@ -241,99 +297,104 @@ class _ExperimanetDashBoardScreen extends State<ExperimanetDashBoardScreen> {
     );
   }
 
-  Widget makeCard(
-      {experimentID,
-      userImage = "assets/images/unknown_user.jpg",
-      feedTime,
-      feedText,
-      feedImage = 'assets/images/corn.png'}) {
-    return GestureDetector(
-      onTap: () {
-        //Navigator.pushNamedAndRemoveUntil(context, PLOT_ROUTE, (route) => false,arguments: experimentID);
-        //Navigator.of(context).pushNamed('$i')
-        // Navigator.pushReplacementNamed(context, PLOT_ROUTE,(Route<dynamic> route) => false,arguments: experimentID);
-        Navigator.pushNamed(context, PLOT_ROUTE, arguments: experimentID);
-        //Navigator.of(context).push(MaterialPageRoute(builder: (context)=>PlotsScreen(title: experimentID)));
-      },
-      child: Row(
-        mainAxisSize: MainAxisSize.max,
+  Widget makeExperimentDatail() {
+    return Container();
+  }
+
+  Widget makePieChart() {
+    return Container(
+      width: 400,
+      height: 600,
+      child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Padding(
-            padding: EdgeInsetsDirectional.fromSTEB(15, 0, 0, 0),
-            child: Column(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.center,
+          Container(
+            width: 600,
+            height: 300,
+            decoration:
+                BoxDecoration(border: Border.all(color: Colors.blueAccent)),
+            //color: Colors.black54.withOpacity(0.5),
+
+            child: Stack(
               children: [
-                Image.asset(
-                  // 'assets/images/masterCard@2x.png',
-                  feedImage,
-                  width: 40,
-                  height: 40,
-                  fit: BoxFit.fitWidth,
-                ),
+                Positioned(
+                    top: 70.0,
+                    right: 175,
+                    child: InkWell(
+                        child: AnimatedCircularChart(
+                          key: _chartKey,
+                          size: _chartSize,
+                          initialChartData: data,
+                          holeLabel: countAll==-1? "0 / 0 ":"${countUpload} / ${countAll}",
+                           labelStyle: TextStyle(
+                            color: Colors.black,
+                            fontSize: 15,
+                          ),
+                          //edgeStyle: SegmentEdgeStyle.round,
+                          textStyle: TextStyle(
+                            color: Colors.black,
+                            fontSize: 20,
+                          ),
+
+                          chartType: CircularChartType.Radial,
+                          width: 15,
+                        ),
+                        onTap: () {
+                          Navigator.of(context).pushNamed(UNMATCH_PLOT_ROUTE);
+                        })
+                        ),
+                Positioned(
+                    top: 10.0,
+                    left: 15,
+                    child: Text(
+                      "Upload",
+                      style: TextStyle(
+                        fontSize: 25,
+                        color: Colors.blue[600],
+                        fontWeight: FontWeight.bold,
+                      ),
+                    )),
               ],
             ),
           ),
-          Expanded(
-            child: Padding(
-              padding: EdgeInsetsDirectional.fromSTEB(4, 0, 0, 0),
-              child: Column(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
+          Container(
+              width: 600,
+              height: 300,
+              child: Stack(
                 children: [
-                  Padding(
-                    padding: EdgeInsetsDirectional.fromSTEB(12, 0, 12, 0),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.max,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Trial number  WD121454214021',
-                          // style: FlutterFlowTheme.of(context).bodyText2.override(
-                          //       fontFamily: 'Lexend Deca',
-                          //       fontSize: 12,
-                          //     ),
+                  Positioned(
+                      top: 70.0,
+                      right: 175,
+                      child: AnimatedCircularChart(
+                        key: _chartKey2,
+                        size: _chartSize,
+                        holeLabel: countAll==-1? "0 / 0 ":"${countImage} / ${countAll}",
+                        //edgeStyle: SegmentEdgeStyle.round,
+                        initialChartData: data2,
+                        textStyle: TextStyle(
+                          color: Colors.black,
+                          fontSize: 20,
                         ),
-                        Text(
-                          'Jun 1, 2021',
-                          textAlign: TextAlign.end,
-                          // style: FlutterFlowTheme.of(context).bodyText2.override(
-                          //       fontFamily: 'Lexend Deca',
-                          //       color: FlutterFlowTheme.of(context).grayDark,
-                          //     ),
+
+                        chartType: CircularChartType.Radial,
+                        width: 15,
+                      )),
+                  Positioned(
+                      top: 10.0,
+                      left: 15,
+                      child: Text(
+                        "Image",
+                        style: TextStyle(
+                          fontSize: 25,
+                          color: Colors.blue[600],
+                          fontWeight: FontWeight.bold,
                         ),
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsetsDirectional.fromSTEB(12, 0, 12, 0),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.max,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Padding(
-                          padding: EdgeInsetsDirectional.fromSTEB(0, 4, 0, 0),
-                          child: Text(
-                            '20 plot',
-                            // style: FlutterFlowTheme.of(context).bodyText1,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                      )),
                 ],
-              ),
-            ),
-          ),
+              )),
         ],
       ),
     );
-  }
-
-  Widget makeExperimentDatail() {
-    return Container();
   }
 
   @override
@@ -343,12 +404,12 @@ class _ExperimanetDashBoardScreen extends State<ExperimanetDashBoardScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            height: 120,
+            height: 90,
             color: Colors.blue,
           ),
           // Container(
-          //   height: 265,
-          //   width: 650,
+          //   height: 200,
+          //   width: 600,
           //   //color: Colors.blue,
           //   child: ListView.builder(
           //     itemCount: 5,
@@ -360,6 +421,7 @@ class _ExperimanetDashBoardScreen extends State<ExperimanetDashBoardScreen> {
           //               setState(() {
           //                 _currentItem = index;
           //                 print(_currentItem);
+          //                 _randomize();
           //               });
           //           },
           //           child: Padding(
@@ -375,18 +437,19 @@ class _ExperimanetDashBoardScreen extends State<ExperimanetDashBoardScreen> {
           //                         Colors.black.withOpacity(.9),
           //                         Colors.black.withOpacity(.1),
           //                       ])),
-          //               width: 310,
-          //               height: 140,
+          //               width: 350,
+          //               height: 100,
           //               //margin: const EdgeInsets.symmetric(horizontal: 1.0),
           //               child: makeExperiment(
           //                   experimentID: '54155',
           //                   //userImage: 'assets/images/aiony-haust.jpg',
           //                   feedTime: '1 hr ago',
           //                   feedText:
-          //                       'All the Lorem Ipsum generators on the Internet tend to repeat predefined.',
+          //                       'All the Lorem Ipsum.',
           //                   feedImage: 'assets/images/corn.png'),
           //             ),
-          //           ));
+          //           )
+          //           );
           //     },
           //     scrollDirection: Axis.horizontal,
           //   ),
@@ -414,13 +477,14 @@ class _ExperimanetDashBoardScreen extends State<ExperimanetDashBoardScreen> {
             padding: EdgeInsets.all(2),
             child: Container(
               //color: Colors.red,
-              height:735,
-              width: 650,
+              height: 600,
+              width: 600,
               //color: Colors.red,
 
               //  child: Expanded(
 
-              child: Column(
+              child: makePieChart(),
+              /*Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(
@@ -435,7 +499,7 @@ class _ExperimanetDashBoardScreen extends State<ExperimanetDashBoardScreen> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Text(
-                            'Image',
+                            'Plot',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               color: Colors.blue,
@@ -443,11 +507,11 @@ class _ExperimanetDashBoardScreen extends State<ExperimanetDashBoardScreen> {
                             ),
                           ),
                           SizedBox(
-                            width: 35,
+                            width: 50,
                           ),
                           Container(
                             margin: EdgeInsets.symmetric(vertical: 20),
-                            width: 500,
+                            width: 300,
                             height: 20,
                             child: ClipRRect(
                               borderRadius:
@@ -462,17 +526,7 @@ class _ExperimanetDashBoardScreen extends State<ExperimanetDashBoardScreen> {
                           ),
                         ],
                       ),
-                      Positioned(
-                          left: 200,
-                          bottom: 22,
-                          child: Text(
-                            '$finImage %',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                              fontSize: 15,
-                            ),
-                          )),
+                      Positioned(left: 200, bottom: 22, child: Text('70/100')),
                     ],
                   ),
                   Stack(
@@ -489,11 +543,11 @@ class _ExperimanetDashBoardScreen extends State<ExperimanetDashBoardScreen> {
                             ),
                           ),
                           SizedBox(
-                            width: 10,
+                            width: 0,
                           ),
                           Container(
                             margin: EdgeInsets.symmetric(vertical: 20),
-                            width: 500,
+                            width: 300,
                             height: 20,
                             child: ClipRRect(
                               borderRadius:
@@ -508,161 +562,47 @@ class _ExperimanetDashBoardScreen extends State<ExperimanetDashBoardScreen> {
                           ),
                         ],
                       ),
-                      Positioned(
-                          left: 200,
-                          bottom: 22,
-                          child: Text(
-                            '$finUpload %',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                              fontSize: 15,
-                            ),
-                          )),
+                      Positioned(left: 200, bottom: 22, child: Text('70/100')),
                     ],
                   ),
-                  Expanded(
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.vertical,
-                      child: Padding(
-                        padding: EdgeInsets.all(5),
-                        child: Column(
-                          children: [
-                            makeCard(),
-                            ProgressLine(
-                              color: Color(0xFF007EE5),
-                              percentage: finImage,
+                  Stack(
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Approved',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.blue,
+                              fontSize: 20,
                             ),
-                            SizedBox(
-                              height: 20,
+                          ),
+                          SizedBox(
+                            width: 0,
+                          ),
+                          Container(
+                            margin: EdgeInsets.symmetric(vertical: 20),
+                            width: 300,
+                            height: 20,
+                            child: ClipRRect(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(10)),
+                              child: LinearProgressIndicator(
+                                value: 0.7,
+                                valueColor:
+                                    AlwaysStoppedAnimation<Color>(Colors.green),
+                                backgroundColor: Color(0xffD6D6D6),
+                              ),
                             ),
-                            makeCard(),
-                            ProgressLine(
-                              color: Color(0xFF007EE5),
-                              percentage: finImage,
-                            ),
-                            SizedBox(
-                              height: 20,
-                            ),
-                            makeCard(),
-                            ProgressLine(
-                              color: Color(0xFF007EE5),
-                              percentage: finUpload,
-                            ),
-                            SizedBox(
-                              height: 20,
-                            ),
-                            makeCard(),
-                            ProgressLine(
-                              color: Color(0xFF007EE5),
-                              percentage: 60,
-                            ),
-                            SizedBox(
-                              height: 20,
-                            ),
-                            makeCard(),
-                            ProgressLine(
-                              color: Color(0xFF007EE5),
-                              percentage: 60,
-                            ),
-                            SizedBox(
-                              height: 20,
-                            ),
-                            makeCard(),
-                            ProgressLine(
-                              color: Color(0xFF007EE5),
-                              percentage: 60,
-                            ),
-                            SizedBox(
-                              height: 20,
-                            ),
-                            makeCard(),
-                            ProgressLine(
-                              color: Color(0xFF007EE5),
-                              percentage: 60,
-                            ),
-                            SizedBox(
-                              height: 20,
-                            ),
-                            makeCard(),
-                            ProgressLine(
-                              color: Color(0xFF007EE5),
-                              percentage: 60,
-                            ),
-                            SizedBox(
-                              height: 20,
-                            ),
-                            makeCard(),
-                            ProgressLine(
-                              color: Color(0xFF007EE5),
-                              percentage: 60,
-                            ),
-                            SizedBox(
-                              height: 20,
-                            ),
-                            makeCard(),
-                            ProgressLine(
-                              color: Color(0xFF007EE5),
-                              percentage: 60,
-                            ),
-                            SizedBox(
-                              height: 20,
-                            ),
-                            makeCard(),
-                            ProgressLine(
-                              color: Color(0xFF007EE5),
-                              percentage: 60,
-                            ),
-                            SizedBox(
-                              height: 20,
-                            ),
-                            
-
-
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
-                    ),
+                      Positioned(left: 200, bottom: 22, child: Text('70/100')),
+                    ],
                   ),
-                  
-                  // Stack(
-                  //   children: [
-                  //     Row(
-                  //       crossAxisAlignment: CrossAxisAlignment.center,
-                  //       children: [
-                  //         Text(
-                  //           'Approved',
-                  //           style: TextStyle(
-                  //             fontWeight: FontWeight.bold,
-                  //             color: Colors.blue,
-                  //             fontSize: 20,
-                  //           ),
-                  //         ),
-                  //         SizedBox(
-                  //           width: 0,
-                  //         ),
-                  //         Container(
-                  //           margin: EdgeInsets.symmetric(vertical: 20),
-                  //           width: 300,
-                  //           height: 20,
-                  //           child: ClipRRect(
-                  //             borderRadius:
-                  //                 BorderRadius.all(Radius.circular(10)),
-                  //             child: LinearProgressIndicator(
-                  //               value: 0.7,
-                  //               valueColor:
-                  //                   AlwaysStoppedAnimation<Color>(Colors.green),
-                  //               backgroundColor: Color(0xffD6D6D6),
-                  //             ),
-                  //           ),
-                  //         ),
-                  //       ],
-                  //     ),
-                  //     Positioned(left: 200, bottom: 22, child: Text('70/100')),
-                  //   ],
-                  // ),
                 ],
-              ),
+              ),*/
 
               //   ),
             ),

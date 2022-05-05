@@ -168,7 +168,8 @@ class _PlotsScreen extends State<PlotsScreen> {
       userImage = "assets/images/unknown_user.png",
       feedTime,
       feedText,
-      feedImage}) {
+      feedImage,
+      isUpload}) {
     return Container(
       margin: EdgeInsets.only(bottom: 20),
       child: Column(
@@ -363,6 +364,10 @@ class _PlotsScreen extends State<PlotsScreen> {
 
   final picker = ImagePicker();
   _upload(File imageFile, String plotID, int index) async {
+    if( !imageFile.existsSync()||imageFile == null){
+      print(" null123");
+      return;
+    }
     // open a bytestream
     var stream =
         new http.ByteStream(DelegatingStream.typed(imageFile.openRead()));
@@ -415,20 +420,26 @@ class _PlotsScreen extends State<PlotsScreen> {
   }
 
   _getImage(ImageSource imageSource, String plotId) async {
+     imageCache!.clear();
+     print("clear cach1");
+  
     final _imageFile = await picker.pickImage(
       source: imageSource,
       maxWidth: 1000,
       maxHeight: 1000,
+      imageQuality: 50,
       //imageQuality: quality,
     );
-
+    print("get image");
 //if user doesn't take any image, just return.
     if (_imageFile == null) {
-      // print("null");
+       print("null");
       return;
     }
     setState(
       () {
+         imageCache!.clear();
+        print("clear cach2");
         //print("not null");
         _image = _imageFile;
         isSelected = true;
@@ -493,15 +504,15 @@ class _PlotsScreen extends State<PlotsScreen> {
     final _filename = p.basename(impath.path);
     directory = await getExternalStorageDirectory();
 
-    print("tempPath3 = " + directory!.path);
-    print("FileName = " + _filename);
+   // print("tempPath3 = " + directory!.path);
+   // print("FileName = " + _filename);
 
     int count1 = 0;
 
     if (count1 == 0) {
       galleryPath = "";
-      for (int i = 0; i < directory.path.length; i++) {
-        print(directory.path[i]);
+      for (int i = 0; i < directory!.path.length; i++) {
+       // print(directory.path[i]);
 
         galleryPath = galleryPath + directory.path[i];
 
@@ -515,8 +526,8 @@ class _PlotsScreen extends State<PlotsScreen> {
     galleryPath = galleryPath + "/Pictures/";
     testpath = galleryPath + _filename;
 
-    print("galleryPath = " + galleryPath);
-    print("imgPath = " + testpath);
+    // print("galleryPath = " + galleryPath);
+    // print("imgPath = " + testpath);
 
     print(impath.path);
     _image = null;
@@ -625,11 +636,22 @@ class _PlotsScreen extends State<PlotsScreen> {
             Container(
               child: InkWell(
                 child: Container(
-                  child: Text(
+                  child:
+                  // isUpload== 0 ?
+                   Text(
                     //iconupload
                     "Upload",
+                 
                     style: TextStyle(color: Colors.blue, fontSize: 12),
-                  ),
+                  )
+                  // :
+                  // Text(
+                  //   //iconupload
+                  //   "Upload",
+                 
+                  //   style: TextStyle(color: Colors.grey, fontSize: 12),
+                  // )
+                  ,
                 ),
                 onTap: () {
                   showDialog(
@@ -656,7 +678,8 @@ class _PlotsScreen extends State<PlotsScreen> {
                                   if (ost[i].pltId.toString() ==
                                       plotId.toString()) {
                                     filePath = ost[i].plotImgPath;
-
+                                    print("testtest : "+filePath);
+                                    if(filePath!="null" && filePath!="")
                                     _upload(File(filePath), plotId, i);
 
                                     _UserBox?.get(userNameNow)
@@ -933,6 +956,7 @@ class _PlotsScreen extends State<PlotsScreen> {
             feedText:
                 "${e.barcode} Status : ${e.plotStatus}   repNO : ${e.repNo}  uploaded : ${e.isUpload} ",
             feedImage: e.plotImgPath,
+            isUpload: e.isUpload == null ? 0 : e.isUpload
           )
         ]);
       });
